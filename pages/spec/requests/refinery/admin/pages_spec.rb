@@ -542,6 +542,28 @@ module Refinery
           end
         end
       end
+
+      # see https://github.com/resolve/refinerycms/issues/1595
+      describe 'custom slug', :js => true do
+        let!(:custom_slug_page) { FactoryGirl.create(:page) }
+
+        before do
+          Refinery::Pages.stub(:use_custom_slugs).and_return(true)
+        end
+
+        it 'allows to set custom slug multiple times' do
+          visit refinery.edit_admin_page_path(custom_slug_page)
+
+          click_link 'toggle_advanced_options'
+
+          fill_in 'page_custom_slug', :with => 'yyy'
+          click_button "submit_continue_button"
+          fill_in 'page_custom_slug', :with => 'zzz'
+          click_button 'submit_button'
+
+          page.should have_content('Zzz')
+        end
+      end
     end
 
     describe "TranslatePages" do
